@@ -12,10 +12,14 @@ public class Search {
         int []arr = new int [1024];
         System.out.println("Linear Search Result: " +linearSearch(arr,target));
         System.out.println("Binary Search Result: " +binarySearch(arr,target));
-
-
+        System.out.println("Recursive Binary Search Result: " +recursiveBinarySearch(arr,target,0,arr.length-1,0));
     }
+
     public static int linearSearch(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            System.out.println("Invalid or empty array.");
+            return -1;
+        }
         int steps = 0;
         for(int i = 0; i < nums.length; i++){
             steps++;
@@ -29,6 +33,10 @@ public class Search {
     }
 
     public static int binarySearch(int[] nums, int target) {
+        if (nums == null || nums.length == 0) {
+            System.out.println("Invalid or empty array.");
+            return -1;
+        }
         int steps = 0;
         int start = 0;
         int end = nums.length - 1;
@@ -41,10 +49,34 @@ public class Search {
             }
             else if(nums[mid] < target)
                 start = mid + 1;
-            else if(nums[mid] > target)
+            else
                 end = mid - 1;
         }
         System.out.println("Steps taken by Binary Search: " +steps);
         return -1;
+    }
+
+    public static int recursiveBinarySearch(int[] nums, int target, int start, int end, int steps) {
+        if (nums == null || nums.length == 0) {
+            System.out.println("Invalid or empty array.");
+            return -1;
+        }
+        if (start > end) {
+            System.out.println("Steps taken by Recursive Binary Search: " + steps);
+            return -1;
+        }
+        steps++;
+        int mid = start + (end - start) / 2;
+
+        if (nums[mid] == target) {
+            System.out.println("Steps taken by Recursive Binary Search: " + steps);
+            return mid;
+        }
+        else if (nums[mid] > target) {
+            return recursiveBinarySearch(nums, target, start, mid - 1, steps);
+        }
+        else {
+            return recursiveBinarySearch(nums, target, mid + 1, end, steps);
+        }
     }
 }
