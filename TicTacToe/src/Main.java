@@ -1,12 +1,11 @@
+import java.util.Arrays;
 import java.util.Scanner;
 
 class Main {
     public static void main(String[] args) {
         char[][] board = new char[3][3];
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[row].length; col++) {
-                board[row][col] = ' ';
-            }
+        for (char[] chars : board) {
+            Arrays.fill(chars, ' ');
         }
 
         char player = 'X';
@@ -42,8 +41,8 @@ class Main {
 
     public static boolean haveWon(char[][] board, char player) {
         // check the rows
-        for (int row = 0; row < board.length; row++) {
-            if (board[row][0] == player && board[row][1] == player && board[row][2] == player) {
+        for (char[] chars : board) {
+            if (chars[0] == player && chars[1] == player && chars[2] == player) {
                 return true;
             }
         }
@@ -68,9 +67,9 @@ class Main {
     }
 
     public static void printBoard(char[][] board) {
-        for (int row = 0; row < board.length; row++) {
-            for (int col = 0; col < board[row].length; col++) {
-                System.out.print(board[row][col] + " | ");
+        for (char[] row : board) {
+            for (char cell : row) {
+                System.out.print(cell + " | ");
             }
             System.out.println();
         }
