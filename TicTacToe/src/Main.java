@@ -24,6 +24,9 @@ class Main {
                 gameOver = haveWon(board, player);
                 if (gameOver) {
                     System.out.println("Player " + player + " has won: ");
+                } else if (isBoardFull(board)) {
+                    System.out.println("The game is a draw!");
+                    gameOver = true;
                 } else {
                     // if (player == 'X') {
                     // player = 'O';
@@ -65,7 +68,16 @@ class Main {
 
         return false;
     }
-
+    public static boolean isBoardFull(char[][] board) {
+        for (char[] row : board) {
+            for (char cell : row) {
+                if (cell == ' ') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     public static void printBoard(char[][] board) {
         for (char[] row : board) {
             for (char cell : row) {
