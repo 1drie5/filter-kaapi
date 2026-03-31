@@ -18,7 +18,10 @@ class Main {
             int row = scanner.nextInt();
             int col = scanner.nextInt();
             System.out.println();
-
+            if (row < 0 || row > 2 || col < 0 || col > 2) {
+                System.out.println("Invalid input. Rows and columns must be 0, 1, or 2. Try again!");
+                continue;
+            }
             if (board[row][col] == ' ') {
                 board[row][col] = player; // place the element
                 gameOver = haveWon(board, player);
