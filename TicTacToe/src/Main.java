@@ -15,8 +15,16 @@ class Main {
         while (!gameOver) {
             printBoard(board);
             System.out.print("Player " + player + " enter: ");
-            int row = scanner.nextInt();
-            int col = scanner.nextInt();
+            int row, col;
+            try {
+                row = scanner.nextInt();
+                col = scanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Invalid input! Please enter numbers only.");
+                scanner.nextLine();
+                System.out.println();
+                continue;
+            }
             System.out.println();
             if (row < 0 || row > 2 || col < 0 || col > 2) {
                 System.out.println("Invalid input. Rows and columns must be 0, 1, or 2. Try again!");
