@@ -3,54 +3,65 @@ import java.util.Scanner;
 
 class Main {
     public static void main(String[] args) {
-        char[][] board = new char[3][3];
-        for (char[] chars : board) {
-            Arrays.fill(chars, ' ');
-        }
-
-        char player = 'X';
-        boolean gameOver = false;
         Scanner scanner = new Scanner(System.in);
+        boolean keepPlaying = true;
 
-        while (!gameOver) {
-            printBoard(board);
-            System.out.print("Player " + player + " enter: ");
-            int row, col;
-            try {
-                row = scanner.nextInt();
-                col = scanner.nextInt();
-            } catch (Exception e) {
-                System.out.println("Invalid input! Please enter numbers only.");
-                scanner.nextLine();
+        while (keepPlaying) {
+            char[][] board = new char[3][3];
+            for (char[] chars : board) {
+                Arrays.fill(chars, ' ');
+            }
+
+            char player = 'X';
+            boolean gameOver = false;
+
+            while (!gameOver) {
+                printBoard(board);
+                System.out.print("Player " + player + " enter: ");
+                int row, col;
+                try {
+                    row = scanner.nextInt();
+                    col = scanner.nextInt();
+                } catch (Exception e) {
+                    System.out.println("Invalid input! Please enter numbers only.");
+                    scanner.nextLine();
+                    System.out.println();
+                    continue;
+                }
                 System.out.println();
-                continue;
+                if (row < 0 || row > 2 || col < 0 || col > 2) {
+                    System.out.println("Invalid input! Rows and columns must be 0, 1, or 2. Try again!");
+                    continue;
+                }
+                if (board[row][col] == ' ') {
+                    board[row][col] = player; // place the element
+                    gameOver = haveWon(board, player);
+                    if (gameOver) {
+                        System.out.println("Player " + player + " has won: ");
+                    } else if (isBoardFull(board)) {
+                        System.out.println("The game is a draw!");
+                        gameOver = true;
+                    } else {
+                        // if (player == 'X') {
+                        // player = 'O';
+                        // } else {
+                        // player = 'X';
+                        // }
+                        player = (player == 'X') ? 'O' : 'X';
+                    }
+                } else {
+                    System.out.println("Invalid move. Try again!");
+                }
+            }
+            printBoard(board);
+            System.out.print("\nDo you want to play again? (y/n): ");
+            String response = scanner.next();
+            if (!response.equalsIgnoreCase("y")) {
+                keepPlaying = false;
+                System.out.println("Thanks for playing! Goodbye.");
             }
             System.out.println();
-            if (row < 0 || row > 2 || col < 0 || col > 2) {
-                System.out.println("Invalid input. Rows and columns must be 0, 1, or 2. Try again!");
-                continue;
-            }
-            if (board[row][col] == ' ') {
-                board[row][col] = player; // place the element
-                gameOver = haveWon(board, player);
-                if (gameOver) {
-                    System.out.println("Player " + player + " has won: ");
-                } else if (isBoardFull(board)) {
-                    System.out.println("The game is a draw!");
-                    gameOver = true;
-                } else {
-                    // if (player == 'X') {
-                    // player = 'O';
-                    // } else {
-                    // player = 'X';
-                    // }
-                    player = (player == 'X') ? 'O' : 'X';
-                }
-            } else {
-                System.out.println("Invalid move. Try again!");
-            }
         }
-        printBoard(board);
         scanner.close();
     }
 
