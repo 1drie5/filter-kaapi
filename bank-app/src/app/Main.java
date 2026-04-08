@@ -27,11 +27,11 @@ public class Main {
 
             switch (choice) {
                 case "1" -> openAccount(scanner, bankService);
-                case "2" -> deposit(scanner);
+                case "2" -> deposit(scanner, bankService);
                 case "3" -> withdraw(scanner);
                 case "4" -> transfer(scanner);
                 case "5" -> statement(scanner);
-                case "6" -> listAccounts(scanner);
+                case "6" -> listAccounts(scanner, bankService);
                 case "7" -> searchAccounts(scanner);
                 case "0" -> running = false;
             }
@@ -47,11 +47,20 @@ public class Main {
         String type = scanner.nextLine().trim();
         System.out.println("Initial deposit (optional, blank for 0): ");
         String amountStr = scanner.nextLine().trim();
-        Double initial = Double.valueOf(amountStr);
-        bankService.openAccount(name, email, type);
+        Double initial = Double.parseDouble(amountStr);
+        String accountNumber = bankService.openAccount(name,email,type);
+        if (initial > 0)
+            bankService.deposit(accountNumber, initial, "Initial Deposit");
+        System.out.println("Account opened: " + accountNumber);
     }
 
-    private static void deposit(Scanner scanner) {
+    private static void deposit(Scanner scanner, BankService bankService) {
+        System.out.println("Account number: ");
+        String accountNumber = scanner.nextLine().trim();
+        System.out.println("Amount: ");
+        Double amount = Double.valueOf(scanner.nextLine().trim());
+        bankService.deposit(accountNumber, amount, "Deposit");
+        System.out.println("Deposited");
     }
 
     private static void withdraw(Scanner scanner) {
@@ -63,7 +72,10 @@ public class Main {
     private static void statement(Scanner scanner) {
     }
 
-    private static void listAccounts(Scanner scanner) {
+    private static void listAccounts(Scanner scanner, BankService bankService) {
+        bankService.listAccounts().forEach(a -> {
+            System.out.println(a.getAccountNumber() + " | " + a.getAccountType() + " | " + a.getBalance());
+        });
     }
 
     private static void searchAccounts(Scanner scanner) {
