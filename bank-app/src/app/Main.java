@@ -29,7 +29,7 @@ public class Main {
                 case "1" -> openAccount(scanner, bankService);
                 case "2" -> deposit(scanner, bankService);
                 case "3" -> withdraw(scanner, bankService);
-                case "4" -> transfer(scanner);
+                case "4" -> transfer(scanner, bankService);
                 case "5" -> statement(scanner);
                 case "6" -> listAccounts(scanner, bankService);
                 case "7" -> searchAccounts(scanner);
@@ -72,7 +72,15 @@ public class Main {
         System.out.println("Withdrawn");
     }
 
-    private static void transfer(Scanner scanner) {
+    private static void transfer(Scanner scanner, BankService bankService ) {
+        System.out.println("From Account: ");
+        String from = scanner.nextLine().trim();
+        System.out.println("To Account: ");
+        String to = scanner.nextLine().trim();
+        System.out.println("Amount: ");
+        Double amount = Double.valueOf(scanner.nextLine().trim());
+        bankService.transfer(from, to, amount, "Transfer");
+        System.out.printf("Successfully transferred %.2f from %s to %s.%n", amount, from, to);
     }
 
     private static void statement(Scanner scanner) {
