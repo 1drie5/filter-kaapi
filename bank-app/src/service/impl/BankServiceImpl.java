@@ -75,6 +75,15 @@ public class BankServiceImpl implements BankService {
                 amount, UUID.randomUUID().toString(), note, LocalDateTime.now(), Type.TRANSFER_IN));
     }
 
+    @Override
+    public List<Transaction> getStatement(String account) {
+        accountRepository.findByNumber(account)
+                .orElseThrow(() -> new RuntimeException("Invalid Account Number"));
+        return transactionRepository.findByAccount(account).stream()
+                .sorted(Comparator.comparing(Transaction::getTimestamp))
+                .collect(Collectors.toList());
+    }
+
     private String getAccountNumber() {
         int size = accountRepository.findAll().size() + 1;
         return String.format("AC%06d", size);

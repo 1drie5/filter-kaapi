@@ -30,7 +30,7 @@ public class Main {
                 case "2" -> deposit(scanner, bankService);
                 case "3" -> withdraw(scanner, bankService);
                 case "4" -> transfer(scanner, bankService);
-                case "5" -> statement(scanner);
+                case "5" -> statement(scanner, bankService);
                 case "6" -> listAccounts(scanner, bankService);
                 case "7" -> searchAccounts(scanner);
                 case "0" -> running = false;
@@ -83,7 +83,17 @@ public class Main {
         System.out.printf("Successfully transferred %.2f from %s to %s.%n", amount, from, to);
     }
 
-    private static void statement(Scanner scanner) {
+    private static void statement(Scanner scanner, BankService bankService) {
+        System.out.println("Account number: ");
+        String account = scanner.nextLine().trim();
+
+        try {
+            bankService.getStatement(account).forEach(t -> {
+                System.out.println(t.getTimestamp() + " | " + t.getType() + " | " + t.getAmount() + " | " + t.getNote());
+            });
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void listAccounts(Scanner scanner, BankService bankService) {

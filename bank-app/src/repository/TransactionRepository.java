@@ -12,4 +12,8 @@ public class TransactionRepository {
                 k -> new ArrayList<>());
         list.add(transaction);
     }
+
+    public List<Transaction> findByAccount(String account) {
+        return new ArrayList<>(txByAccount.getOrDefault(account, Collections.emptyList()));
+    }
 }
