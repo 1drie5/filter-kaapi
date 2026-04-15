@@ -1,7 +1,9 @@
 package app;
+import exceptions.InsufficientFundsException;
+import exceptions.AccountNotFoundException;
+import exceptions.ValidationException;
 import service.BankService;
 import service.impl.BankServiceImpl;
-
 import java.util.Scanner;
 
 public class Main {
@@ -39,75 +41,131 @@ public class Main {
     }
 
     private static void openAccount(Scanner scanner,  BankService bankService) {
-        System.out.println("Customer name: ");
-        String name = scanner.nextLine().trim();
-        System.out.println("Customer email: ");
-        String email = scanner.nextLine().trim();
-        System.out.println("Account Type (SAVINGS/CURRENT): ");
-        String type = scanner.nextLine().trim();
-        System.out.println("Initial deposit (optional, blank for 0): ");
-        String amountStr = scanner.nextLine().trim();
-        if (amountStr.isBlank()) amountStr = "0";
-        Double initial = Double.parseDouble(amountStr);
-        String accountNumber = bankService.openAccount(name,email,type);
-        if (initial > 0)
-            bankService.deposit(accountNumber, initial, "Initial Deposit");
-        System.out.println("Account opened: " + accountNumber);
+        try {
+            System.out.println("Customer name: ");
+            String name = scanner.nextLine().trim();
+            System.out.println("Customer email: ");
+            String email = scanner.nextLine().trim();
+            System.out.println("Account Type (SAVINGS/CURRENT): ");
+            String type = scanner.nextLine().trim();
+            System.out.println("Initial deposit (optional, blank for 0): ");
+            String amountStr = scanner.nextLine().trim();
+            if (amountStr.isBlank()) amountStr = "0";
+
+            Double initial = Double.parseDouble(amountStr);
+            String accountNumber = bankService.openAccount(name, email, type);
+
+            if (initial > 0) {
+                bankService.deposit(accountNumber, initial, "Initial Deposit");
+            }
+            System.out.println("Account opened: " + accountNumber);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Initial deposit must be a valid number.");
+        } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
 
     private static void deposit(Scanner scanner, BankService bankService) {
-        System.out.println("Account number: ");
-        String accountNumber = scanner.nextLine().trim();
-        System.out.println("Amount: ");
-        Double amount = Double.valueOf(scanner.nextLine().trim());
-        bankService.deposit(accountNumber, amount, "Deposit");
-        System.out.println("Deposited");
+        try {
+            System.out.println("Account number: ");
+            String accountNumber = scanner.nextLine().trim();
+            System.out.println("Amount: ");
+            Double amount = Double.valueOf(scanner.nextLine().trim());
+
+            bankService.deposit(accountNumber, amount, "Deposit");
+            System.out.println("Deposited successfully.");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Deposit amount must be a valid number.");
+        } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
 
     private static void withdraw(Scanner scanner, BankService bankService) {
-        System.out.println("Account number: ");
-        String accountNumber = scanner.nextLine().trim();
-        System.out.println("Amount: ");
-        Double amount = Double.valueOf(scanner.nextLine().trim());
-        bankService.withdraw(accountNumber, amount, "Withdrawal");
-        System.out.println("Withdrawn");
+        try {
+            System.out.println("Account number: ");
+            String accountNumber = scanner.nextLine().trim();
+            System.out.println("Amount: ");
+            Double amount = Double.valueOf(scanner.nextLine().trim());
+
+            bankService.withdraw(accountNumber, amount, "Withdrawal");
+            System.out.println("Withdrawn successfully.");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Withdrawal amount must be a valid number.");
+        } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
 
     private static void transfer(Scanner scanner, BankService bankService ) {
-        System.out.println("From Account: ");
-        String from = scanner.nextLine().trim();
-        System.out.println("To Account: ");
-        String to = scanner.nextLine().trim();
-        System.out.println("Amount: ");
-        Double amount = Double.valueOf(scanner.nextLine().trim());
-        bankService.transfer(from, to, amount, "Transfer");
-        System.out.printf("Successfully transferred %.2f from %s to %s.%n", amount, from, to);
+        try {
+            System.out.println("From Account: ");
+            String from = scanner.nextLine().trim();
+            System.out.println("To Account: ");
+            String to = scanner.nextLine().trim();
+            System.out.println("Amount: ");
+            Double amount = Double.valueOf(scanner.nextLine().trim());
+
+            bankService.transfer(from, to, amount, "Transfer");
+            System.out.printf("Successfully transferred %.2f from %s to %s.%n", amount, from, to);
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Transfer amount must be a valid number.");
+        } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
 
     private static void statement(Scanner scanner, BankService bankService) {
-        System.out.println("Account number: ");
-        String account = scanner.nextLine().trim();
-
         try {
+            System.out.println("Account number: ");
+            String account = scanner.nextLine().trim();
+
             bankService.getStatement(account).forEach(t -> {
                 System.out.println(t.getTimestamp() + " | " + t.getType() + " | " + t.getAmount() + " | " + t.getNote());
             });
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+
+        } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
         }
     }
 
     private static void listAccounts(Scanner scanner, BankService bankService) {
-        bankService.listAccounts().forEach(a -> {
-            System.out.println(a.getAccountNumber() + " | " + a.getAccountType() + " | " + a.getBalance());
-        });
+        try {
+            bankService.listAccounts().forEach(a -> {
+                System.out.println(a.getAccountNumber() + " | " + a.getAccountType() + " | " + a.getBalance());
+            });
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
 
     private static void searchAccounts(Scanner scanner, BankService bankService) {
-        System.out.println("Customer name contains: ");
-        String q = scanner.nextLine().trim();
-        bankService.searchAccountsByCustomerName(q).forEach(account ->
-                System.out.println(account.getAccountNumber() + " | " + account.getAccountType() + " | " + account.getBalance())
-        );
+        try {
+            System.out.println("Customer name contains: ");
+            String q = scanner.nextLine().trim();
+
+            bankService.searchAccountsByCustomerName(q).forEach(account ->
+                    System.out.println(account.getAccountNumber() + " | " + account.getAccountType() + " | " + account.getBalance())
+            );
+        } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
 }
