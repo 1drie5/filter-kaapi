@@ -5,6 +5,7 @@ import exceptions.ValidationException;
 import service.BankService;
 import service.impl.BankServiceImpl;
 import java.util.Scanner;
+import java.time.format.DateTimeFormatter;
 
 public class Main {
     public static void main(String[] args) {
@@ -133,8 +134,14 @@ public class Main {
             System.out.println("Account number: ");
             String account = scanner.nextLine().trim();
 
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"); // The formatter
+
             bankService.getStatement(account).forEach(t -> {
-                System.out.println(t.getTimestamp() + " | " + t.getType() + " | " + t.getAmount() + " | " + t.getNote());
+                System.out.printf("%s | %s | %.2f | %s%n",
+                        t.getTimestamp().format(fmt),
+                        t.getType(),
+                        t.getAmount(),
+                        t.getNote());
             });
 
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
