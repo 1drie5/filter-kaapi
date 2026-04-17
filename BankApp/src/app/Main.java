@@ -14,6 +14,7 @@ public class Main {
         boolean running = true;
         System.out.println("Welcome to Console Bank");
         while (running) {
+            System.out.println("\n---------------------------------------------------");
             System.out.println("""
                         1) Open Account
                         2) Deposit
@@ -39,6 +40,8 @@ public class Main {
                 case "0" -> running = false;
             }
         }
+        System.out.println("\nThank you for using Console Bank. Goodbye!");
+        scanner.close();
     }
 
     private static void openAccount(Scanner scanner,  BankService bankService) {
