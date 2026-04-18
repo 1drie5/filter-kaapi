@@ -157,7 +157,7 @@ public class Main {
     private static void listAccounts(Scanner scanner, BankService bankService) {
         try {
             bankService.listAccounts().forEach(a -> {
-                System.out.println(a.getAccountNumber() + " | " + a.getAccountType() + " | " + a.getBalance());
+                System.out.printf("%s | %s | $%.2f%n", a.getAccountNumber(), a.getAccountType(), a.getBalance());
             });
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());
@@ -169,9 +169,9 @@ public class Main {
             System.out.println("Customer name contains: ");
             String q = scanner.nextLine().trim();
 
-            bankService.searchAccountsByCustomerName(q).forEach(account ->
-                    System.out.println(account.getAccountNumber() + " | " + account.getAccountType() + " | " + account.getBalance())
-            );
+            bankService.searchAccountsByCustomerName(q).forEach(a ->
+                    System.out.printf("%s | %s | $%.2f%n", a.getAccountNumber(), a.getAccountType(), a.getBalance()
+            ));
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (Exception e) {
