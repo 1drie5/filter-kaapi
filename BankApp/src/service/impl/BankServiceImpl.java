@@ -140,6 +140,11 @@ public class BankServiceImpl implements BankService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Customer getCustomerById(String customerId) {
+        return customerRepository.findById(customerId);
+    }
+
     private String getAccountNumber() {
         int size = accountRepository.findAll().size() + 1;
         return String.format("AC%06d", size);

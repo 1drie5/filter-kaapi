@@ -1,4 +1,5 @@
 package app;
+import domain.Customer;
 import exceptions.InsufficientFundsException;
 import exceptions.AccountNotFoundException;
 import exceptions.ValidationException;
@@ -157,7 +158,13 @@ public class Main {
     private static void listAccounts(Scanner scanner, BankService bankService) {
         try {
             bankService.listAccounts().forEach(a -> {
-                System.out.printf("%s | %s | $%.2f%n", a.getAccountNumber(), a.getAccountType(), a.getBalance());
+                Customer customer = bankService.getCustomerById(a.getCustomerId());
+                String customerName = (customer != null) ? customer.getName() : "Unknown";
+                System.out.printf("%s | %-15s | %s | $%.2f%n",
+                        a.getAccountNumber(),
+                        customerName,
+                        a.getAccountType(),
+                        a.getBalance());
             });
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());

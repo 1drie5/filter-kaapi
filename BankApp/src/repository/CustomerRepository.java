@@ -17,4 +17,8 @@ public class CustomerRepository {
     public void save(Customer c) {
         customersById.put(c.getId(), c);
     }
+
+    public Customer findById(String customerId) {
+        return customersById.get(customerId);
+    }
 }
