@@ -145,6 +145,12 @@ public class BankServiceImpl implements BankService {
         return customerRepository.findById(customerId);
     }
 
+    @Override
+    public Account getAccountByNumber(String accountNumber) {
+        return accountRepository.findByNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+    }
+
     private String getAccountNumber() {
         int size = accountRepository.findAll().size() + 1;
         return String.format("AC%06d", size);

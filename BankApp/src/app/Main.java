@@ -1,4 +1,5 @@
 package app;
+import domain.Account;
 import domain.Customer;
 import exceptions.InsufficientFundsException;
 import exceptions.AccountNotFoundException;
@@ -15,7 +16,7 @@ public class Main {
         boolean running = true;
         System.out.println("Welcome to Console Bank");
         while (running) {
-            System.out.println("\n---------------------------------------------------");
+            System.out.println("\n---------------------------------------------------------------");
             System.out.println("""
                         1) Open Account
                         2) Deposit
@@ -136,17 +137,35 @@ public class Main {
     private static void statement(Scanner scanner, BankService bankService) {
         try {
             System.out.println("Account number: ");
-            String account = scanner.nextLine().trim();
+            String accountNumber = scanner.nextLine().trim();
 
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"); // The formatter
+            // 1. Fetch Account and Customer details
+            Account account = bankService.getAccountByNumber(accountNumber);
+            Customer customer = bankService.getCustomerById(account.getCustomerId());
 
-            bankService.getStatement(account).forEach(t -> {
-                System.out.printf("%s | %s | %.2f | %s%n",
+            // 2. Print the personal info header
+            System.out.println("\n===============================================================");
+            System.out.println("                        ACCOUNT STATEMENT                      ");
+            System.out.println("===============================================================");
+            System.out.println("Name         : " + (customer != null ? customer.getName() : "Unknown"));
+            System.out.println("Email        : " + (customer != null ? customer.getEmail() : "Unknown"));
+            System.out.println("Account No   : " + account.getAccountNumber());
+            System.out.println("Account Type : " + account.getAccountType());
+            System.out.printf("Current Bal  : $%.2f%n", account.getBalance());
+            System.out.println("---------------------------------------------------------------");
+
+            // 3. Print the transactions
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+            bankService.getStatement(accountNumber).forEach(t -> {
+                // Formatted with %-10s for type and %7.2f for amount to keep columns aligned
+                System.out.printf("%s | %-12s | $%8.2f | %s%n",
                         t.getTimestamp().format(fmt),
                         t.getType(),
                         t.getAmount(),
                         t.getNote());
             });
+            System.out.println("===============================================================\n");
 
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());
