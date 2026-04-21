@@ -181,9 +181,11 @@ public class Main {
             bankService.listAccounts().forEach(a -> {
                 Customer customer = bankService.getCustomerById(a.getCustomerId());
                 String customerName = (customer != null) ? customer.getName() : "Unknown";
-                System.out.printf("%s | %-15s | %s | $%.2f%n",
+                String status = a.isActive() ? "ACTIVE" : "CLOSED";
+                System.out.printf("%s | %-15s | %-8s | %s | $%.2f%n",
                         a.getAccountNumber(),
                         customerName,
+                        status,
                         a.getAccountType(),
                         a.getBalance());
             });
