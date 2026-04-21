@@ -25,6 +25,7 @@ public class Main {
                         5) Account Statement
                         6) List Accounts
                         7) Search Accounts by Customer Name
+                        8) Close Account
                         0) Exit
                     """);
             System.out.print("CHOOSE: ");
@@ -39,6 +40,7 @@ public class Main {
                 case "5" -> statement(scanner, bankService);
                 case "6" -> listAccounts(scanner, bankService);
                 case "7" -> searchAccounts(scanner, bankService);
+                case "8" -> closeAccount(scanner, bankService);
                 case "0" -> running = false;
             }
         }
@@ -198,6 +200,21 @@ public class Main {
             bankService.searchAccountsByCustomerName(q).forEach(a ->
                     System.out.printf("%s | %s | $%.2f%n", a.getAccountNumber(), a.getAccountType(), a.getBalance()
             ));
+        } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
+            System.out.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+
+    private static void closeAccount(Scanner scanner, BankService bankService) {
+        try {
+            System.out.println("Account number to close: ");
+            String accountNumber = scanner.nextLine().trim();
+
+            bankService.closeAccount(accountNumber);
+            System.out.println("Account " + accountNumber + " has been successfully closed.");
+
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (Exception e) {

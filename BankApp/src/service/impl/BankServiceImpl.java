@@ -155,4 +155,18 @@ public class BankServiceImpl implements BankService {
         int size = accountRepository.findAll().size() + 1;
         return String.format("AC%06d", size);
     }
+
+    @Override
+    public void closeAccount(String accountNumber) {
+        Account account = getAccountByNumber(accountNumber);
+
+        if (!account.isActive()) {
+            throw new ValidationException("Account is already closed.");
+        }
+        if (account.getBalance() > 0) {
+            throw new ValidationException("Cannot close account. Please withdraw remaining balance of $" + account.getBalance() + " first.");
+        }
+
+        account.setActive(false);
+    }
 }

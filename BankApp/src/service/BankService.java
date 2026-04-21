@@ -14,4 +14,5 @@ public interface BankService {
     List<Account> searchAccountsByCustomerName(String q);
     Customer getCustomerById(String customerId);
     Account getAccountByNumber(String accountNumber);
+    void closeAccount(String accountNumber);
 }

@@ -5,6 +5,7 @@ public class Account {
     private String customerId;
     private Double balance;
     private String accountType;
+    private boolean isActive = true;
 
     public Account(String accountNumber, String accountType, Double balance, String customerId) {
         this.accountNumber = accountNumber;
@@ -43,5 +44,13 @@ public class Account {
 
     public void setAccountType(String accountType) {
         this.accountType = accountType;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 }
