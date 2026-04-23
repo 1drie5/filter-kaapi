@@ -72,6 +72,9 @@ public class BankServiceImpl implements BankService {
         validateAmountPositive.validate(amount);
         Account account = accountRepository.findByNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+        if (!account.isActive()) {
+            throw new ValidationException("Transaction failed: This account is closed.");
+        }
         account.setBalance(account.getBalance() + amount);
         Transaction transaction = new Transaction(account.getAccountNumber(),
                 amount, UUID.randomUUID().toString(), note, LocalDateTime.now(), Type.DEPOSIT);
@@ -83,6 +86,11 @@ public class BankServiceImpl implements BankService {
         validateAmountPositive.validate(amount);
         Account account = accountRepository.findByNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+
+        if (!account.isActive()) {
+            throw new ValidationException("Transaction failed: This account is closed.");
+        }
+
         if(account.getBalance().compareTo(amount) < 0)
             throw new InsufficientFundsException("Insufficient Balance");
         account.setBalance(account.getBalance() - amount);
@@ -98,8 +106,20 @@ public class BankServiceImpl implements BankService {
             throw new ValidationException("Cannot transfer to your own account");
         Account from = accountRepository.findByNumber(fromAcc)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + fromAcc));
+
+        // Block if sender is closed
+        if (!from.isActive()) {
+            throw new ValidationException("Transaction failed: Sender account is closed.");
+        }
+
         Account to = accountRepository.findByNumber(toAcc)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + toAcc));
+
+        // Block if receiver is closed
+        if (!to.isActive()) {
+            throw new ValidationException("Transaction failed: Receiver account is closed.");
+        }
+
         if(from.getBalance().compareTo(amount) < 0)
             throw new InsufficientFundsException("Insufficient Balance");
         from.setBalance(from.getBalance() - amount);
