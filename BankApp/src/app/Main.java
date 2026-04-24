@@ -84,7 +84,26 @@ public class Main {
             System.out.println("Amount: ");
             Double amount = Double.valueOf(scanner.nextLine().trim());
 
-            bankService.deposit(accountNumber, amount, "Deposit");
+            String note;
+            while (true) {
+                System.out.println("Add a note (optional): ");
+                note = scanner.nextLine().trim();
+
+                if (!note.isBlank()) {
+                    break;
+                }
+
+                System.out.println("You didn't add a note. Continue with default note 'Deposit'? (yes/no)");
+                String confirm = scanner.nextLine().trim().toLowerCase();
+
+                if (confirm.equals("yes") || confirm.equals("y")) {
+                    note = "Deposit";
+                    break;
+                }
+                System.out.println("Okay, please enter your custom note.");
+            }
+
+            bankService.deposit(accountNumber, amount, note);
             System.out.println("Deposited successfully.");
 
         } catch (NumberFormatException e) {
