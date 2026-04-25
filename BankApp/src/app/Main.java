@@ -124,7 +124,10 @@ public class Main {
 
             bankService.withdraw(accountNumber, amount, "Withdrawal");
             System.out.println("Withdrawn successfully.");
-
+            Account updatedAccount = bankService.getAccountByNumber(accountNumber);
+            if (updatedAccount.getBalance() < 50.00) {
+                System.out.println("Alert! Your account balance is low $" + updatedAccount.getBalance() + ".");
+            }
         } catch (NumberFormatException e) {
             System.out.println("Error: Withdrawal amount must be a valid number.");
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
