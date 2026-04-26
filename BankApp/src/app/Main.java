@@ -221,9 +221,18 @@ public class Main {
             System.out.println("Customer name contains: ");
             String q = scanner.nextLine().trim();
 
-            bankService.searchAccountsByCustomerName(q).forEach(a ->
-                    System.out.printf("%s | %s | $%.2f%n", a.getAccountNumber(), a.getAccountType(), a.getBalance()
-            ));
+            bankService.searchAccountsByCustomerName(q).forEach(a -> {
+                Customer customer = bankService.getCustomerById(a.getCustomerId());
+                String customerName = (customer != null) ? customer.getName() : "Unknown";
+                String status = a.isActive() ? "ACTIVE" : "CLOSED";
+
+                System.out.printf("%s | %-15s | %-8s | %s | $%.2f%n",
+                        a.getAccountNumber(),
+                        customerName,
+                        status,
+                        a.getAccountType(),
+                        a.getBalance());
+            });
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (Exception e) {
