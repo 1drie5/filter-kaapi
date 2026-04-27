@@ -211,6 +211,13 @@ public class Main {
                         a.getAccountType(),
                         a.getBalance());
             });
+            System.out.println("---------------------------------------------------------------");
+            double totalReserves = bankService.listAccounts().stream()
+                    .filter(Account::isActive)
+                    .mapToDouble(Account::getBalance)
+                    .sum();
+            System.out.printf("TOTAL BANK RESERVES: $%.2f%n", totalReserves);
+            System.out.println("===============================================================");
         } catch (Exception e) {
             System.out.println("An unexpected error occurred: " + e.getMessage());
         }
