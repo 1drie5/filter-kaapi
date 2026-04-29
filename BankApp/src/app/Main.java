@@ -54,8 +54,21 @@ public class Main {
             String name = scanner.nextLine().trim();
             System.out.println("Customer email: ");
             String email = scanner.nextLine().trim();
-            System.out.println("Account Type (SAVINGS/CURRENT): ");
-            String type = scanner.nextLine().trim();
+            String type;
+            while (true) {
+                System.out.println("Account Type (Enter 1 for SAVINGS, 2 for CURRENT): ");
+                String choice = scanner.nextLine().trim();
+
+                if (choice.equals("1")) {
+                    type = "SAVINGS";
+                    break;
+                } else if (choice.equals("2")) {
+                    type = "CURRENT";
+                    break;
+                } else {
+                    System.out.println("Invalid choice. Please enter exactly 1 or 2.");
+                }
+            }
             System.out.println("Initial deposit (optional, blank for 0): ");
             String amountStr = scanner.nextLine().trim();
             if (amountStr.isBlank()) amountStr = "0";
