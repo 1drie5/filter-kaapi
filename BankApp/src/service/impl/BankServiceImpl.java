@@ -33,7 +33,7 @@ public class BankServiceImpl implements BankService {
     };
 
     private final Validation<String> validateType = type -> {
-        if (type == null || !(type.equalsIgnoreCase("SAVINGS") || type.contains("CURRENT")))
+        if (type == null || !(type.equalsIgnoreCase("SAVINGS") || type.equalsIgnoreCase("CURRENT")))
             throw new ValidationException("Type must be SAVINGS or CURRENT");
     };
 
@@ -91,8 +91,11 @@ public class BankServiceImpl implements BankService {
             throw new ValidationException("Transaction failed: This account is closed.");
         }
 
-        if(account.getBalance().compareTo(amount) < 0)
-            throw new InsufficientFundsException("Insufficient Balance");
+        double limit = account.getAccountType().equals("SAVINGS") ? 100.0 : -500.0;
+        if ((account.getBalance() - amount) < limit) {
+            throw new InsufficientFundsException(String.format("Transaction failed: %s limit is $%.2f", account.getAccountType(), limit));
+        }
+
         account.setBalance(account.getBalance() - amount);
         Transaction transaction = new Transaction(account.getAccountNumber(),
                 amount, UUID.randomUUID().toString(), note, LocalDateTime.now(), Type.WITHDRAW);
@@ -120,8 +123,11 @@ public class BankServiceImpl implements BankService {
             throw new ValidationException("Transaction failed: Receiver account is closed.");
         }
 
-        if(from.getBalance().compareTo(amount) < 0)
-            throw new InsufficientFundsException("Insufficient Balance");
+        double limit = from.getAccountType().equals("SAVINGS") ? 100.0 : -500.0;
+
+        if ((from.getBalance() - amount) < limit) {
+            throw new InsufficientFundsException(String.format("Transfer failed: Sender's %s limit is $%.2f", from.getAccountType(), limit));
+        }
         from.setBalance(from.getBalance() - amount);
         to.setBalance(to.getBalance() + amount);
         transactionRepository.add(new Transaction(from.getAccountNumber(),
