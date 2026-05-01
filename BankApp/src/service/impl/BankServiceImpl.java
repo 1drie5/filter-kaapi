@@ -185,14 +185,18 @@ public class BankServiceImpl implements BankService {
     @Override
     public void closeAccount(String accountNumber) {
         Account account = getAccountByNumber(accountNumber);
-
         if (!account.isActive()) {
             throw new ValidationException("Account is already closed.");
         }
-        if (account.getBalance() > 0) {
-            throw new ValidationException("Cannot close account. Please withdraw remaining balance of $" + account.getBalance() + " first.");
+        if (account.getBalance() < 0) {
+            throw new ValidationException(String.format("Cannot close account. Please pay off your overdraft of $%.2f first.", Math.abs(account.getBalance())));
         }
-
+        if (account.getBalance() > 0) {
+            double payout = account.getBalance();
+            account.setBalance(0.0);
+            transactionRepository.add(new Transaction(account.getAccountNumber(),
+                    payout, UUID.randomUUID().toString(), "Account Closure - Final Payout", LocalDateTime.now(), Type.WITHDRAW));
+        }
         account.setActive(false);
     }
 }

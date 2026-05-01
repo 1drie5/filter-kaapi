@@ -278,10 +278,13 @@ public class Main {
         try {
             System.out.println("Account number to close: ");
             String accountNumber = scanner.nextLine().trim();
-
+            Account account = bankService.getAccountByNumber(accountNumber);
+            double payout = account.getBalance();
             bankService.closeAccount(accountNumber);
             System.out.println("Account " + accountNumber + " has been successfully closed.");
-
+            if (payout > 0) {
+                System.out.printf("A final payout of $%.2f has been processed.%n", payout);
+            }
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());
         } catch (Exception e) {
