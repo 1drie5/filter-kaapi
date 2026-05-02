@@ -10,6 +10,10 @@ import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
+    public static final String RESET = "\u001B[0m";
+    public static final String RED = "\u001B[31m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String YELLOW = "\u001B[33m";
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         BankService bankService = new BankServiceImpl();
@@ -66,7 +70,7 @@ public class Main {
                     type = "CURRENT";
                     break;
                 } else {
-                    System.out.println("Invalid choice. Please enter exactly 1 or 2.");
+                    System.out.println(RED + "Invalid choice. Please enter exactly 1 or 2." + RESET);
                 }
             }
             System.out.println("Initial deposit (optional, blank for 0): ");
@@ -79,14 +83,14 @@ public class Main {
             if (initial > 0) {
                 bankService.deposit(accountNumber, initial, "Initial Deposit");
             }
-            System.out.println("Account opened: " + accountNumber);
+            System.out.println(GREEN + "Account opened: " + accountNumber + RESET);
 
         } catch (NumberFormatException e) {
-            System.out.println("Error: Initial deposit must be a valid number.");
+            System.out.println(RED + "Error: Initial deposit must be a valid number." + RESET);
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 
@@ -117,14 +121,14 @@ public class Main {
             }
 
             bankService.deposit(accountNumber, amount, note);
-            System.out.println("Deposited successfully.");
+            System.out.println(GREEN + "Deposited successfully." + RESET);
 
         } catch (NumberFormatException e) {
-            System.out.println("Error: Deposit amount must be a valid number.");
+            System.out.println(RED + "Error: Deposit amount must be a valid number." + RESET);
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 
@@ -136,17 +140,17 @@ public class Main {
             Double amount = Double.valueOf(scanner.nextLine().trim());
 
             bankService.withdraw(accountNumber, amount, "Withdrawal");
-            System.out.println("Withdrawn successfully.");
+            System.out.println(GREEN + "Withdrawn successfully." + RESET);
             Account updatedAccount = bankService.getAccountByNumber(accountNumber);
             if (updatedAccount.getBalance() < 50.00) {
-                System.out.println("Alert! Your account balance is low $" + updatedAccount.getBalance() + ".");
+                System.out.println(YELLOW + "Alert! Your account balance is low $" + updatedAccount.getBalance() + "." + RESET);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Error: Withdrawal amount must be a valid number.");
+            System.out.println(RED + "Error: Withdrawal amount must be a valid number." + RESET);
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 
@@ -174,14 +178,14 @@ public class Main {
                 System.out.println("Okay, please enter your custom note.");
             }
             bankService.transfer(from, to, amount, note);
-            System.out.printf("Successfully transferred %.2f from %s to %s.%n", amount, from, to);
+            System.out.printf(GREEN + "Successfully transferred %.2f from %s to %s." + RESET + "%n", amount, from, to);
 
         } catch (NumberFormatException e) {
-            System.out.println("Error: Transfer amount must be a valid number.");
+            System.out.println(RED + "Error: Transfer amount must be a valid number." + RESET);
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 
@@ -219,9 +223,9 @@ public class Main {
             System.out.println("===============================================================\n");
 
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 
@@ -246,7 +250,7 @@ public class Main {
             System.out.printf("TOTAL BANK RESERVES: $%.2f%n", totalReserves);
             System.out.println("===============================================================");
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 
@@ -268,9 +272,9 @@ public class Main {
                         a.getBalance());
             });
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 
@@ -281,14 +285,14 @@ public class Main {
             Account account = bankService.getAccountByNumber(accountNumber);
             double payout = account.getBalance();
             bankService.closeAccount(accountNumber);
-            System.out.println("Account " + accountNumber + " has been successfully closed.");
+            System.out.println(GREEN + "Account " + accountNumber + " has been successfully closed." + RESET);
             if (payout > 0) {
-                System.out.printf("A final payout of $%.2f has been processed.%n", payout);
+                System.out.printf(GREEN + "A final payout of $%.2f has been processed." + RESET + "%n", payout);
             }
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
-            System.out.println("An unexpected error occurred: " + e.getMessage());
+            System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
     }
 }
