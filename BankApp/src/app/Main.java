@@ -1,11 +1,16 @@
 package app;
 import domain.Account;
 import domain.Customer;
+import domain.Transaction;
 import exceptions.InsufficientFundsException;
 import exceptions.AccountNotFoundException;
 import exceptions.ValidationException;
 import service.BankService;
 import service.impl.BankServiceImpl;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
 
@@ -14,6 +19,7 @@ public class Main {
     public static final String RED = "\u001B[31m";
     public static final String GREEN = "\u001B[32m";
     public static final String YELLOW = "\u001B[33m";
+    private static final String SEPARATOR = "===============================================================";
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         BankService bankService = new BankServiceImpl();
@@ -193,40 +199,53 @@ public class Main {
         try {
             System.out.println("Account number: ");
             String accountNumber = scanner.nextLine().trim();
-
-            // 1. Fetch Account and Customer details
             Account account = bankService.getAccountByNumber(accountNumber);
             Customer customer = bankService.getCustomerById(account.getCustomerId());
-
-            // 2. Print the personal info header
-            System.out.println("\n===============================================================");
-            System.out.println("                        ACCOUNT STATEMENT                      ");
-            System.out.println("===============================================================");
-            System.out.println("Name         : " + (customer != null ? customer.getName() : "Unknown"));
-            System.out.println("Email        : " + (customer != null ? customer.getEmail() : "Unknown"));
-            System.out.println("Account No   : " + account.getAccountNumber());
-            System.out.println("Account Type : " + account.getAccountType());
-            System.out.printf("Current Bal  : $%.2f%n", account.getBalance());
-            System.out.println("---------------------------------------------------------------");
-
-            // 3. Print the transactions
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
-
-            bankService.getStatement(accountNumber).forEach(t -> {
-                // Formatted with %-10s for type and %7.2f for amount to keep columns aligned
-                System.out.printf("%s | %-12s | $%8.2f | %s%n",
-                        t.getTimestamp().format(fmt),
-                        t.getType(),
-                        t.getAmount(),
-                        t.getNote());
-            });
-            System.out.println("===============================================================\n");
-
+            List<Transaction> transactions = bankService.getStatement(accountNumber);
+            System.out.println();
+            PrintWriter consoleWriter = new PrintWriter(System.out, true);
+            printStatement(consoleWriter, account, customer, transactions);
+            System.out.println();
+            System.out.println("Do you want to save this statement as a text file? (y/yes): ");
+            String saveChoice = scanner.nextLine().trim().toLowerCase();
+            if (saveChoice.equals("y") || saveChoice.equals("yes")) {
+                String safeAccountNumber = account.getAccountNumber().replaceAll("[^a-zA-Z0-9]", "_");
+                String filename = safeAccountNumber + "_statement.txt";
+                try (PrintWriter fileWriter = new PrintWriter(filename)) {
+                    printStatement(fileWriter, account, customer, transactions);
+                    System.out.println(GREEN + "Success! Statement saved to " + filename + RESET);
+                } catch (IOException ex) {
+                    System.out.println(RED + "Error writing to file: " + ex.getMessage() + RESET);
+                }
+            }
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
             System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
             System.out.println(RED + "An unexpected error occurred: " + e.getMessage() + RESET);
         }
+    }
+
+    private static void printStatement(PrintWriter writer, Account account, Customer customer, List<Transaction> transactions) {
+        writer.println(SEPARATOR);
+        writer.println("                        ACCOUNT STATEMENT                      ");
+        writer.println(SEPARATOR);
+        writer.printf("Name         : %s%n", (customer != null ? customer.getName() : "Unknown"));
+        writer.printf("Email        : %s%n", (customer != null ? customer.getEmail() : "Unknown"));
+        writer.printf("Account No   : %s%n", account.getAccountNumber());
+        writer.printf("Account Type : %s%n", account.getAccountType());
+        writer.printf("Current Bal  : $%.2f%n", account.getBalance());
+        writer.println("---------------------------------------------------------------");
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+        for (Transaction t : transactions) {
+            writer.printf("%s | %-12s | $%8.2f | %s%n",
+                    t.getTimestamp().format(fmt),
+                    t.getType(),
+                    t.getAmount(),
+                    t.getNote());
+        }
+        writer.println(SEPARATOR);
     }
 
     private static void listAccounts(Scanner scanner, BankService bankService) {
