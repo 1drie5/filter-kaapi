@@ -199,25 +199,48 @@ public class Main {
         try {
             System.out.println("Account number: ");
             String accountNumber = scanner.nextLine().trim();
+
             Account account = bankService.getAccountByNumber(accountNumber);
             Customer customer = bankService.getCustomerById(account.getCustomerId());
-            List<Transaction> transactions = bankService.getStatement(accountNumber);
+            List<Transaction> allTransactions = bankService.getStatement(accountNumber);
+
+            // 1. Calculate the starting index for the last 5 transactions
+            int startIndex = Math.max(0, allTransactions.size() - 5);
+            List<Transaction> miniTransactions = allTransactions.subList(startIndex, allTransactions.size());
+
             System.out.println();
             PrintWriter consoleWriter = new PrintWriter(System.out, true);
-            printStatement(consoleWriter, account, customer, transactions);
+
+            // 2. Print the Mini-Statement by default
+            printStatement(consoleWriter, account, customer, miniTransactions, "MINI STATEMENT (LAST 5)");
             System.out.println();
-            System.out.println("Do you want to save this statement as a text file? (y/yes): ");
+
+            // 3. Ask if they want the full history
+            System.out.println("Do you want to see the full statement? (y/yes): ");
+            String fullChoice = scanner.nextLine().trim().toLowerCase();
+
+            if (fullChoice.equals("y") || fullChoice.equals("yes")) {
+                System.out.println();
+                printStatement(consoleWriter, account, customer, allTransactions, "FULL ACCOUNT STATEMENT");
+            }
+
+            System.out.println();
+            // 4. Update prompt to clarify they are saving the FULL statement
+            System.out.println("Do you want to save the FULL statement as a text file? (y/yes): ");
             String saveChoice = scanner.nextLine().trim().toLowerCase();
+
             if (saveChoice.equals("y") || saveChoice.equals("yes")) {
                 String safeAccountNumber = account.getAccountNumber().replaceAll("[^a-zA-Z0-9]", "_");
                 String filename = safeAccountNumber + "_statement.txt";
+
                 try (PrintWriter fileWriter = new PrintWriter(filename)) {
-                    printStatement(fileWriter, account, customer, transactions);
+                    printStatement(fileWriter, account, customer, allTransactions, "FULL ACCOUNT STATEMENT");
                     System.out.println(GREEN + "Success! Statement saved to " + filename + RESET);
                 } catch (IOException ex) {
                     System.out.println(RED + "Error writing to file: " + ex.getMessage() + RESET);
                 }
             }
+
         } catch (ValidationException | AccountNotFoundException | InsufficientFundsException e) {
             System.out.println(RED + "Error: " + e.getMessage() + RESET);
         } catch (Exception e) {
@@ -225,10 +248,13 @@ public class Main {
         }
     }
 
-    private static void printStatement(PrintWriter writer, Account account, Customer customer, List<Transaction> transactions) {
+    private static void printStatement(PrintWriter writer, Account account, Customer customer, List<Transaction> transactions, String title) {
         writer.println(SEPARATOR);
-        writer.println("                        ACCOUNT STATEMENT                      ");
+        // Dynamically center the title based on the separator width (63 characters)
+        int padding = Math.max(0, (63 - title.length()) / 2);
+        writer.println(" ".repeat(padding) + title);
         writer.println(SEPARATOR);
+
         writer.printf("Name         : %s%n", (customer != null ? customer.getName() : "Unknown"));
         writer.printf("Email        : %s%n", (customer != null ? customer.getEmail() : "Unknown"));
         writer.printf("Account No   : %s%n", account.getAccountNumber());
