@@ -327,10 +327,21 @@ public class Main {
         try {
             System.out.println("Account number to close: ");
             String accountNumber = scanner.nextLine().trim();
+
             Account account = bankService.getAccountByNumber(accountNumber);
             double payout = account.getBalance();
+
+            System.out.println(YELLOW + "WARNING: Are you absolutely sure you want to close " + account.getAccountNumber() + "? (y/yes): " + RESET);
+
+            String confirm = scanner.nextLine().trim().toLowerCase();
+            if (!(confirm.equals("y") || confirm.equals("yes"))) {
+                System.out.println("Account closure cancelled.");
+                return;
+            }
+
             bankService.closeAccount(accountNumber);
             System.out.println(GREEN + "Account " + accountNumber + " has been successfully closed." + RESET);
+
             if (payout > 0) {
                 System.out.printf(GREEN + "A final payout of $%.2f has been processed." + RESET + "%n", payout);
             }
