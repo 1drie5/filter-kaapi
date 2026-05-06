@@ -38,8 +38,9 @@ public class BankServiceImpl implements BankService {
     };
 
     private final Validation<Double> validateAmountPositive = amount -> {
-        if (amount == null || amount < 0)
-            throw new ValidationException("Please enter valid amount");
+        // Change < 0 to <= 0
+        if (amount == null || amount <= 0)
+            throw new ValidationException("Amount must be greater than zero.");
     };
 
     @Override
