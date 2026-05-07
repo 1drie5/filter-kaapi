@@ -84,6 +84,10 @@ public class Main {
             if (amountStr.isBlank()) amountStr = "0";
 
             Double initial = Double.parseDouble(amountStr);
+            if (initial < 0) {
+                System.out.println(RED + "Error: Initial deposit cannot be negative." + RESET);
+                return;
+            }
             String accountNumber = bankService.openAccount(name, email, type);
 
             if (initial > 0) {
