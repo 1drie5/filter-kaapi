@@ -29,7 +29,9 @@ public class BankServiceImpl implements BankService {
     };
 
     private final Validation<String> validateEmail = email -> {
-        if (email == null || !email.contains("@")) throw new ValidationException("Email is required");
+        if (email == null ||
+                !email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))
+            throw new ValidationException("Please enter a valid email address.");
     };
 
     private final Validation<String> validateType = type -> {
