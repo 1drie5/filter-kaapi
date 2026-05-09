@@ -307,8 +307,13 @@ public class Main {
         try {
             System.out.println("Customer name contains: ");
             String q = scanner.nextLine().trim();
+            var results = bankService.searchAccountsByCustomerName(q);
+            if (results.isEmpty()) {
+                System.out.println(YELLOW + "No accounts matched your search." + RESET);
+                return;
+            }
 
-            bankService.searchAccountsByCustomerName(q).forEach(a -> {
+            results.forEach(a -> {
                 Customer customer = bankService.getCustomerById(a.getCustomerId());
                 String customerName = (customer != null) ? customer.getName() : "Unknown";
                 String status = a.isActive() ? "ACTIVE" : "CLOSED";
