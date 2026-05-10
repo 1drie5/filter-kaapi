@@ -63,7 +63,7 @@ public class Main {
             System.out.println("Customer name: ");
             String name = scanner.nextLine().trim();
             System.out.println("Customer email: ");
-            String email = scanner.nextLine().trim();
+            String email = scanner.nextLine().trim().toLowerCase();
             String type;
             while (true) {
                 System.out.println("Account Type (Enter 1 for SAVINGS, 2 for CURRENT): ");
