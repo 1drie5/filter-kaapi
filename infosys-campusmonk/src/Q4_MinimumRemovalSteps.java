@@ -14,7 +14,7 @@ I/P: 2 2 3 3 1
 O/P: 3 (2,3)(2,3)(1)
 */
 
-.javaimport java.util.*;
+import java.util.*;
 
 
 public class Q4_MinimumRemovalSteps {
