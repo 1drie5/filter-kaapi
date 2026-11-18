@@ -1,3 +1,4 @@
+package u00_generics;
 /** Demonstrates constructors that declare their own type parameters. */
 public class GenericConstructorsDemo {
 

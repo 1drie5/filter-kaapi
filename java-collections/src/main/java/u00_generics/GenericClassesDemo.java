@@ -1,3 +1,4 @@
+package u00_generics;
 /**  Demonstrates generic classes: one type parameter and multiple type parameters. */
 
 public class GenericClassesDemo {

@@ -1,3 +1,4 @@
+package u00_generics;
 /**
  * Demonstrates how enums can participate in generic APIs.
  *
