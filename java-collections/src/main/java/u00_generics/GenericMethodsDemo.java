@@ -12,7 +12,7 @@ public class GenericMethodsDemo {
         array[second] = temporary;
     }
 
-    /** T must implement Comparable<T>, so values can be compared. */
+    /** T must be comparable to itself or a supertype (Comparable<? super T>), so values can be compared. */
     static <T extends Comparable<? super T>> T max(List<T> values) {
         if (values.isEmpty()) {
             throw new IllegalArgumentException("values must not be empty");
